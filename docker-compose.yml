@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    ports:
+      - "5812:5432"
+    environment:
+      POSTGRES_DB: job_application_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+  backend:
+    build: ./Backend
+    container_name: backend
+    ports:
+      - "3612:3612"
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  employee_form:
+    build: ./Employee_Formfilling
+    container_name: employee_form
+    ports:
+      - "8922:80"
+    networks:
+      - app-network
+
+  hr_form:
+    build: ./HR_FormFilling
+    container_name: hr_form
+    ports:
+      - "8923:80"
+    networks:
+      - app-network
+
+  welcome_page:
+    build: ./Welcome-Page
+    container_name: welcome_page
+    ports:
+      - "8924:80"
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+
+networks:
+  app-network:
+    driver: bridge
+
